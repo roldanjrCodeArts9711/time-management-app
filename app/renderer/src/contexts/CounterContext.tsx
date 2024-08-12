@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useCallback } from "react";
-import useStayAwake from "use-stay-awake";
-import { setRound, setTimerType, setPlay } from "store";
 import { useNotification } from "hooks";
-import { padNum, isEqualToOne } from "utils";
+import React, { useCallback, useEffect, useState } from "react";
+import { setPlay, setRound, setTimerType } from "store";
+import useStayAwake from "use-stay-awake";
+import { isEqualToOne, padNum } from "utils";
 
 import notificationIcon from "assets/logos/notification-dark.png";
 
@@ -44,6 +44,7 @@ const CounterProvider: React.FC = ({ children }) => {
     {
       icon: notificationIcon,
       mute: !settings.notificationSoundOn,
+      notificationSounds: settings.notificationSounds,
     },
     settings.notificationType !== "none"
   );
@@ -106,72 +107,30 @@ const CounterProvider: React.FC = ({ children }) => {
           padNum(date.getHours()) + ":" + padNum(date.getMinutes());
 
         if (timer.timerType !== TimerStatus.SPECIAL_BREAK) {
-          if (firstBreak && currentTime === firstBreak.fromTime) {
-            dispatch(setTimerType(TimerStatus.SPECIAL_BREAK));
-            setTimerDuration(firstBreak.duration);
-            notification(
-              "Special break started.",
-              {
-                body: `Enjoy your ${firstBreak.duration} ${
-                  isEqualToOne(firstBreak.duration)
-                    ? "minute"
-                    : "minutes"
-                } special break.`,
-              },
-              specialBreakStartedWav
-            );
-            return;
-          }
+          const breaks = [
+            firstBreak,
+            secondBreak,
+            thirdBreak,
+            fourthBreak,
+          ];
 
-          if (secondBreak && currentTime === secondBreak.fromTime) {
-            dispatch(setTimerType(TimerStatus.SPECIAL_BREAK));
-            setTimerDuration(secondBreak.duration);
-            notification(
-              "Special break started.",
-              {
-                body: `Enjoy your ${secondBreak.duration} ${
-                  isEqualToOne(secondBreak.duration)
-                    ? "minute"
-                    : "minutes"
-                } special break.`,
-              },
-              specialBreakStartedWav
-            );
-            return;
-          }
-
-          if (thirdBreak && currentTime === thirdBreak.fromTime) {
-            dispatch(setTimerType(TimerStatus.SPECIAL_BREAK));
-            setTimerDuration(thirdBreak.duration);
-            notification(
-              "Special break started.",
-              {
-                body: `Enjoy your ${thirdBreak.duration} ${
-                  isEqualToOne(thirdBreak.duration)
-                    ? "minute"
-                    : "minutes"
-                } special break.`,
-              },
-              specialBreakStartedWav
-            );
-            return;
-          }
-
-          if (fourthBreak && currentTime === fourthBreak.fromTime) {
-            dispatch(setTimerType(TimerStatus.SPECIAL_BREAK));
-            setTimerDuration(fourthBreak.duration);
-            notification(
-              "Special break started.",
-              {
-                body: `Enjoy your ${fourthBreak.duration} ${
-                  isEqualToOne(fourthBreak.duration)
-                    ? "minute"
-                    : "minutes"
-                } special break.`,
-              },
-              specialBreakStartedWav
-            );
-            return;
+          for (const breakTime of breaks) {
+            if (breakTime && currentTime === breakTime.fromTime) {
+              dispatch(setTimerType(TimerStatus.SPECIAL_BREAK));
+              setTimerDuration(breakTime.duration);
+              notification(
+                "Special break started.",
+                {
+                  body: `Enjoy your ${breakTime.duration} ${
+                    isEqualToOne(breakTime.duration)
+                      ? "minute"
+                      : "minutes"
+                  } special break.`,
+                },
+                specialBreakStartedWav
+              );
+              return;
+            }
           }
         } else {
           return clearInterval(interval);
@@ -225,27 +184,46 @@ const CounterProvider: React.FC = ({ children }) => {
   }, [timer.playing]);
 
   useEffect(() => {
+    const timerMessages = {
+      [TimerStatus.SHORT_BREAK]:
+        "Prepare yourself to stay focused again.",
+      [TimerStatus.LONG_BREAK]:
+        "Prepare yourself to stay focused again.",
+      [TimerStatus.SPECIAL_BREAK]:
+        "Prepare yourself to stay focused again.",
+      [TimerStatus.STAY_FOCUS]:
+        "Pause all media playing if there's one.",
+    };
+
+    const timerEndMessages = {
+      [TimerStatus.STAY_FOCUS]: {
+        message: "Focus time finished.",
+        nextType: TimerStatus.SHORT_BREAK,
+        sound: focusFinishedWav,
+      },
+      [TimerStatus.SHORT_BREAK]: {
+        message: "Break time finished.",
+        nextType: TimerStatus.STAY_FOCUS,
+        sound: breakFinishedWav,
+      },
+      [TimerStatus.LONG_BREAK]: {
+        message: "Break time finished.",
+        nextType: TimerStatus.STAY_FOCUS,
+        sound: breakFinishedWav,
+      },
+      [TimerStatus.SPECIAL_BREAK]: {
+        message: "Break time finished.",
+        nextType: TimerStatus.STAY_FOCUS,
+        sound: sessionCompletedWav,
+      },
+    };
     if (settings.notificationType === "extra") {
       if (count === 61) {
-        if (timer.timerType === TimerStatus.SHORT_BREAK) {
-          notification(
-            "60 seconds left.",
-            { body: "Prepare yourself to stay focused again." },
-            settings.enableVoiceAssistance && sixtySecondsLeftWav
-          );
-        } else if (timer.timerType === TimerStatus.LONG_BREAK) {
-          notification(
-            "60 seconds left.",
-            { body: "Prepare yourself to stay focused again." },
-            settings.enableVoiceAssistance && sixtySecondsLeftWav
-          );
-        } else if (timer.timerType === TimerStatus.SPECIAL_BREAK) {
-          notification(
-            "60 seconds left.",
-            { body: "Prepare yourself to stay focused again." },
-            settings.enableVoiceAssistance && sixtySecondsLeftWav
-          );
-        }
+        notification(
+          "60 seconds left.",
+          { body: timerMessages[timer.timerType] },
+          settings.enableVoiceAssistance && sixtySecondsLeftWav
+        );
       } else if (
         count === 31 &&
         timer.timerType === TimerStatus.STAY_FOCUS
@@ -259,110 +237,36 @@ const CounterProvider: React.FC = ({ children }) => {
     }
 
     if (count === 0) {
-      switch (timer.timerType) {
-        case TimerStatus.STAY_FOCUS:
-          if (timer.round < config.sessionRounds) {
-            setTimeout(() => {
-              notification(
-                "Focus time finished.",
-                {
-                  body: `Enjoy your ${config.shortBreak} ${
-                    isEqualToOne(config.shortBreak)
-                      ? "minute"
-                      : "minutes"
-                  } short break.`,
-                },
-                settings.enableVoiceAssistance && focusFinishedWav
-              );
+      const timerEndMessage = timerEndMessages[timer.timerType];
+      if (timerEndMessage) {
+        setTimeout(() => {
+          notification(
+            timerEndMessage.message,
+            {
+              body: `Enjoy your ${config[timerEndMessage.nextType]} ${
+                isEqualToOne(config[timerEndMessage.nextType])
+                  ? "minute"
+                  : "minutes"
+              } ${timerEndMessage.nextType.replace("_", " ")}.`,
+            },
+            settings.enableVoiceAssistance && timerEndMessage.sound
+          );
 
-              dispatch(setTimerType(TimerStatus.SHORT_BREAK));
-            }, 1000);
-          } else {
-            setTimeout(() => {
-              notification(
-                "Session rounds completed.",
-                {
-                  body: `Enjoy your ${config.longBreak} ${
-                    isEqualToOne(config.longBreak)
-                      ? "minute"
-                      : "minutes"
-                  } long break.`,
-                },
-                settings.enableVoiceAssistance && sessionCompletedWav
-              );
+          dispatch(setTimerType(timerEndMessage.nextType));
 
-              dispatch(setTimerType(TimerStatus.LONG_BREAK));
-            }, 1000);
+          if (timerEndMessage.nextType === TimerStatus.STAY_FOCUS) {
+            dispatch(
+              setRound(
+                timer.timerType === TimerStatus.SHORT_BREAK
+                  ? timer.round + 1
+                  : 1
+              )
+            );
+            if (!settings.autoStartWorkTime) {
+              dispatch(setPlay(false));
+            }
           }
-          break;
-
-        case TimerStatus.SHORT_BREAK:
-          setTimeout(() => {
-            notification(
-              "Break time finished.",
-              {
-                body: `Stay focused as much as possible for ${
-                  config.stayFocus
-                } ${
-                  isEqualToOne(config.stayFocus) ? "minute" : "minutes"
-                }.`,
-              },
-              settings.enableVoiceAssistance && breakFinishedWav
-            );
-
-            dispatch(setTimerType(TimerStatus.STAY_FOCUS));
-            dispatch(setRound(timer.round + 1));
-
-            if (!settings.autoStartWorkTime) {
-              dispatch(setPlay(false));
-            }
-          }, 1000);
-          break;
-
-        case TimerStatus.LONG_BREAK:
-          setTimeout(() => {
-            notification(
-              "Break time finished.",
-              {
-                body: `Stay focused as much as possible for ${
-                  config.stayFocus
-                } ${
-                  isEqualToOne(config.stayFocus) ? "minute" : "minutes"
-                }.`,
-              },
-              settings.enableVoiceAssistance && breakFinishedWav
-            );
-
-            dispatch(setTimerType(TimerStatus.STAY_FOCUS));
-            dispatch(setRound(1));
-
-            if (!settings.autoStartWorkTime) {
-              dispatch(setPlay(false));
-            }
-          }, 1000);
-          break;
-
-        case TimerStatus.SPECIAL_BREAK:
-          setTimeout(() => {
-            notification(
-              "Break time finished.",
-              {
-                body: `Stay focused as much as possible for ${
-                  config.stayFocus
-                } ${
-                  isEqualToOne(config.stayFocus) ? "minute" : "minutes"
-                }.`,
-              },
-              settings.enableVoiceAssistance && breakFinishedWav
-            );
-
-            dispatch(setTimerType(TimerStatus.STAY_FOCUS));
-
-            if (!settings.autoStartWorkTime) {
-              dispatch(setPlay(false));
-            }
-          }, 1000);
-          break;
+        }, 1000);
       }
     }
   }, [
@@ -379,6 +283,7 @@ const CounterProvider: React.FC = ({ children }) => {
     settings.notificationType,
     settings.autoStartWorkTime,
     settings.enableVoiceAssistance,
+    config,
   ]);
 
   useEffect(() => {

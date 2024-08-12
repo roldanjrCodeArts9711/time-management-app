@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { getFromStorage } from "utils";
-import { SettingTypes, SettingsPayload } from "./types";
 import { defaultSettings } from "./defaultSettings";
+import { SettingTypes, SettingsPayload } from "./types";
 
 export type { SettingTypes };
 
@@ -23,7 +23,7 @@ const settingsSlice = createSlice({
       state.alwaysOnTop = action.payload;
     },
 
-    toggleNotificationSound(state) {
+    toggleNotificationSounds(state) {
       state.notificationSoundOn = !state.notificationSoundOn;
     },
 
@@ -83,6 +83,13 @@ const settingsSlice = createSlice({
       state.notificationType = action.payload;
     },
 
+    setNotificationSounds(
+      state,
+      action: SettingsPayload<"notificationSounds">
+    ) {
+      state.notificationSounds = action.payload;
+    },
+
     setCloseToTray(state, action: SettingsPayload<"closeToTray">) {
       state.closeToTray = action.payload;
     },
@@ -125,9 +132,10 @@ export const {
   setIgnoreUpdate,
   setMinimizeToTray,
   setNotificationType,
+  setNotificationSounds,
   setOpenAtLogin,
   setUseNativeTitlebar,
-  toggleNotificationSound,
+  toggleNotificationSounds,
 } = settingsSlice.actions;
 
 export default settingsSlice.reducer;

@@ -1,7 +1,7 @@
 import styled from "styled-components/macro";
-import { themes } from "styles/themes";
-import { StyledScrollbar } from "styles/mixins";
 import { StyledButtonSecondary } from "styles";
+import { StyledScrollbar } from "styles/mixins";
+import { themes } from "styles/themes";
 
 export const StyledSettings = styled.main`
   width: 100%;
@@ -47,6 +47,15 @@ export const StyledSectionHeading = styled.h4`
   text-transform: uppercase;
 `;
 
+export const StyleSectionSubHeading = styled.h5`
+  font-size: 0.9rem;
+  font-weight: 500;
+
+  color: var(--color-disabled-text);
+
+  text-transform: uppercase;
+`;
+
 export const StyledStarButton = styled(StyledButtonSecondary)`
   & > svg {
     margin-left: -1rem;
@@ -71,4 +80,10 @@ export const StyledSectionSticky = styled.div`
   align-items: start;
 
   padding-top: 2rem;
+`;
+
+export const StyledSectionSubSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 `;

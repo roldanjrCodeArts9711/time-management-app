@@ -1,16 +1,23 @@
+import { SVG } from "components";
 import React, { useState } from "react";
 import {
   StyledCollapse,
-  StyledCollapseHeading,
   StyledCollapseContent,
+  StyledCollapseContentResponsive,
+  StyledCollapseHeading,
 } from "styles";
-import { SVG } from "components";
 
 type Props = {
   children?: React.ReactNode;
+  title?: string;
+  heightResponsive?: boolean;
 };
 
-const Collapse: React.FC<Props> = ({ children }) => {
+const Collapse: React.FC<Props> = ({
+  children,
+  title,
+  heightResponsive = false,
+}) => {
   const [open, setOpen] = useState(false);
 
   const toggleCollapse = () => {
@@ -19,17 +26,25 @@ const Collapse: React.FC<Props> = ({ children }) => {
 
   return (
     <StyledCollapse>
-      <StyledCollapseHeading
-        as={"button"}
-        open={open}
-        onClick={toggleCollapse}
-      >
-        Notification Types
-        <SVG name="chevron-down" />
-      </StyledCollapseHeading>
-      {open && (
-        <StyledCollapseContent>{children}</StyledCollapseContent>
+      {title && (
+        <StyledCollapseHeading
+          as={"button"}
+          open={open}
+          onClick={toggleCollapse}
+        >
+          {title}
+          <SVG name="chevron-down" />
+        </StyledCollapseHeading>
       )}
+      {open ? (
+        heightResponsive ? (
+          <StyledCollapseContentResponsive>
+            {children}
+          </StyledCollapseContentResponsive>
+        ) : (
+          <StyledCollapseContent>{children}</StyledCollapseContent>
+        )
+      ) : null}
     </StyledCollapse>
   );
 };

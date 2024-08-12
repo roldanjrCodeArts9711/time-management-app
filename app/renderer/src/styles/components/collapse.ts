@@ -88,3 +88,9 @@ export const StyledCollapseContent = styled.div`
     }
   }
 `;
+
+export const StyledCollapseContentResponsive = styled(
+  StyledCollapseContent
+)`
+  height: auto;
+`;

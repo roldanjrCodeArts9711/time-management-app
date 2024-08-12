@@ -1,25 +1,30 @@
-import React, { useCallback, useContext } from "react";
+import { Collapse, Radio, Toggler, TogglerProps } from "components";
+import { ThemeContext } from "contexts";
 import { useAppDispatch, useAppSelector } from "hooks/storeHooks";
+import React, { useCallback, useContext } from "react";
 import {
   setAlwaysOnTop,
-  setEnableStrictMode,
-  setEnableProgressAnimation,
-  setNotificationType,
-  setEnableFullscreenBreak,
-  setUseNativeTitlebar,
   setAutoStartWorkTime,
-  setMinimizeToTray,
   setCloseToTray,
-  setEnableVoiceAssistance,
   setEnableCompactMode,
+  setEnableFullscreenBreak,
+  setEnableProgressAnimation,
+  setEnableStrictMode,
+  setEnableVoiceAssistance,
+  setMinimizeToTray,
+  setNotificationSounds,
+  setNotificationType,
   setOpenAtLogin,
+  setUseNativeTitlebar,
 } from "store";
-import { Toggler, TogglerProps, Collapse, Radio } from "components";
-import { ThemeContext } from "contexts";
 
-import SettingSection from "./SettingSection";
+import {
+  NotificationSounds,
+  NotificationTypes,
+} from "store/settings/types";
 import { detectOS } from "utils";
-import { NotificationTypes } from "store/settings/types";
+import SettingSection from "./SettingSection";
+import NotificationSoundsSetting from "./notficationSounds/NotificationSoundsSetting";
 
 const FeatureSection: React.FC = () => {
   const settings = useAppSelector((state) => state.settings);
@@ -149,6 +154,15 @@ const FeatureSection: React.FC = () => {
     [dispatch]
   );
 
+  const onChangeNotificationSound = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      dispatch(
+        setNotificationSounds(e.target.value as NotificationSounds)
+      );
+    },
+    [dispatch]
+  );
+
   return (
     <SettingSection heading="App Features">
       {featureList.map(
@@ -163,7 +177,7 @@ const FeatureSection: React.FC = () => {
           />
         )
       )}
-      <Collapse>
+      <Collapse title="Notification Types">
         <Radio
           id="none"
           label="none"
@@ -193,6 +207,7 @@ const FeatureSection: React.FC = () => {
           onChange={onChangeNotificationProps}
         />
       </Collapse>
+      <NotificationSoundsSetting />
     </SettingSection>
   );
 };

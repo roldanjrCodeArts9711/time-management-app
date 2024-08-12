@@ -15,8 +15,15 @@ export type SettingTypes = {
   minimizeToTray: boolean;
   autoStartWorkTime: boolean;
   notificationType: NotificationTypes;
+  notificationSounds: NotificationSounds;
   openAtLogin: boolean;
 };
+
+export const enum NotificationSounds {
+  DEFAULT = "default", // Windows sound....
+  MULTI = "multi",
+  CUSTOM = "custom",
+}
 
 export const enum NotificationTypes {
   NONE = "none",

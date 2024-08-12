@@ -1,22 +1,22 @@
 import WarningBell from "assets/audios/warning-bell.wav";
 import { SVG } from "components";
-import React, { useCallback, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "hooks/storeHooks";
-import { TimerStatus } from "store/timer/types";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   setEnableCompactMode,
   setPlay,
   setRound,
   setTimerType,
   skipTimer,
-  toggleNotificationSound,
+  toggleNotificationSounds,
 } from "store";
+import { TimerStatus } from "store/timer/types";
 import {
   StyledControl,
   StyledControlMain,
+  StyledControlSpacer,
   StyledStrictIndicator,
   StyledStrictSnackbar,
-  StyledControlSpacer,
 } from "styles";
 import CompactModeButton from "./CompactModeButton";
 import PlayButton from "./PlayButton";
@@ -77,7 +77,7 @@ const Control: React.FC<Props> = ({ resetTimerAction }) => {
   ]);
 
   const onNotifacationSoundCallback = useCallback(() => {
-    dispatch(toggleNotificationSound());
+    dispatch(toggleNotificationSounds());
   }, [dispatch]);
 
   const onToggleCompactCallback = useCallback(() => {
