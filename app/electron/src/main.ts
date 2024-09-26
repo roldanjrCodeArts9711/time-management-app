@@ -95,6 +95,7 @@ function createMainWindow() {
     frame: store.safeGet("useNativeTitlebar"),
     icon: getIcon(),
     backgroundColor: store.safeGet("isDarkMode") ? "#141e25" : "#fff",
+    alwaysOnTop: store.safeGet("alwaysOnTop"),
     webPreferences: {
       contextIsolation: true,
       backgroundThrottling: false,
@@ -364,6 +365,7 @@ if (!onlySingleInstance) {
 
 ipcMain.on(SET_ALWAYS_ON_TOP, (e, { alwaysOnTop }) => {
   win?.setAlwaysOnTop(alwaysOnTop);
+  store.safeSet("alwaysOnTop", alwaysOnTop);
 });
 
 ipcMain.on(SET_FULLSCREEN_BREAK, (e, args) => {
