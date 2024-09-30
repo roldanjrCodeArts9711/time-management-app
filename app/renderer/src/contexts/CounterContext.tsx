@@ -44,6 +44,7 @@ const CounterProvider: React.FC = ({ children }) => {
     {
       icon: notificationIcon,
       mute: !settings.notificationSoundOn,
+      notificationSound: settings.notificationSound,
     },
     settings.notificationType !== "none"
   );

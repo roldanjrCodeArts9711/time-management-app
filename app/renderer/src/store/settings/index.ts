@@ -83,6 +83,13 @@ const settingsSlice = createSlice({
       state.notificationType = action.payload;
     },
 
+    setNotificationSound(
+      state,
+      action: SettingsPayload<"notificationSound">
+    ) {
+      state.notificationSound = action.payload;
+    },
+
     setCloseToTray(state, action: SettingsPayload<"closeToTray">) {
       state.closeToTray = action.payload;
     },
@@ -125,6 +132,7 @@ export const {
   setIgnoreUpdate,
   setMinimizeToTray,
   setNotificationType,
+  setNotificationSound,
   setOpenAtLogin,
   setUseNativeTitlebar,
   toggleNotificationSound,

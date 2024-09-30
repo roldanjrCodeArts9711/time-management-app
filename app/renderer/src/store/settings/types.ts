@@ -15,8 +15,16 @@ export type SettingTypes = {
   minimizeToTray: boolean;
   autoStartWorkTime: boolean;
   notificationType: NotificationTypes;
+  notificationSound: NotificationSounds;
   openAtLogin: boolean;
 };
+
+export const enum NotificationSounds {
+  DEFAULT = "default", // Windows sound....
+  TREASURE = "treasure", // https://pixabay.com/sound-effects/short-success-sound-glockenspiel-treasure-video-game-6346/
+  TRUMPETS = "trumpets", //https://pixabay.com/sound-effects/success-fanfare-trumpets-6185/
+  POMODORO = "pomodoro", // https://pixabay.com/sound-effects/tomato-squishwet-103934/
+}
 
 export const enum NotificationTypes {
   NONE = "none",

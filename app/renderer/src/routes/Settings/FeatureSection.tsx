@@ -5,6 +5,7 @@ import {
   setEnableStrictMode,
   setEnableProgressAnimation,
   setNotificationType,
+  setNotificationSound,
   setEnableFullscreenBreak,
   setUseNativeTitlebar,
   setAutoStartWorkTime,
@@ -14,12 +15,21 @@ import {
   setEnableCompactMode,
   setOpenAtLogin,
 } from "store";
-import { Toggler, TogglerProps, Collapse, Radio } from "components";
+import {
+  Toggler,
+  TogglerProps,
+  Collapse,
+  Radio,
+  Dropdown,
+} from "components";
 import { ThemeContext } from "contexts";
 
 import SettingSection from "./SettingSection";
 import { detectOS } from "utils";
-import { NotificationTypes } from "store/settings/types";
+import {
+  NotificationTypes,
+  NotificationSounds,
+} from "store/settings/types";
 
 const FeatureSection: React.FC = () => {
   const settings = useAppSelector((state) => state.settings);
@@ -149,6 +159,15 @@ const FeatureSection: React.FC = () => {
     [dispatch]
   );
 
+  const onChangeNotificationSound = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      dispatch(
+        setNotificationSound(e.target.value as NotificationSounds)
+      );
+    },
+    [dispatch]
+  );
+
   return (
     <SettingSection heading="App Features">
       {featureList.map(
@@ -193,6 +212,38 @@ const FeatureSection: React.FC = () => {
           onChange={onChangeNotificationProps}
         />
       </Collapse>
+      <Dropdown>
+        <Radio
+          id="default"
+          label="default"
+          name="notification-sound"
+          value={NotificationSounds.DEFAULT}
+          checked={
+            settings.notificationSound === NotificationSounds.DEFAULT
+          }
+          onChange={onChangeNotificationSound}
+        />
+        <Radio
+          id="pomodoro"
+          label="pomodoro"
+          name="notification-sound"
+          value={NotificationSounds.POMODORO}
+          checked={
+            settings.notificationSound === NotificationSounds.POMODORO
+          }
+          onChange={onChangeNotificationSound}
+        />
+        <Radio
+          id="trumpets"
+          label="trumpets"
+          name="notification-sound"
+          value={NotificationSounds.TRUMPETS}
+          checked={
+            settings.notificationSound === NotificationSounds.TRUMPETS
+          }
+          onChange={onChangeNotificationSound}
+        />
+      </Dropdown>
     </SettingSection>
   );
 };

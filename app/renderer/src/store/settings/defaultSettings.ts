@@ -1,4 +1,8 @@
-import { NotificationTypes, SettingTypes } from "./types";
+import {
+  NotificationTypes,
+  NotificationSounds,
+  SettingTypes,
+} from "./types";
 import { detectOS, isPreferredDark } from "utils";
 
 export const defaultSettings: Readonly<SettingTypes> = Object.freeze({
@@ -12,6 +16,7 @@ export const defaultSettings: Readonly<SettingTypes> = Object.freeze({
   enableVoiceAssistance: false,
   notificationSoundOn: true,
   notificationType: NotificationTypes.NONE,
+  notificationSound: NotificationSounds.DEFAULT,
   closeToTray: true,
   minimizeToTray: false,
   autoStartWorkTime: false,
