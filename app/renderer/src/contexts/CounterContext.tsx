@@ -12,8 +12,9 @@ import sessionCompletedWav from "assets/audios/session-completed.wav";
 import sixtySecondsLeftWav from "assets/audios/sixty-seconds-left.wav";
 import specialBreakStartedWav from "assets/audios/special-break-started.wav";
 import thirtySecondsLeftWav from "assets/audios/thirty-seconds-left.wav";
-import { useAppDispatch, useAppSelector } from "hooks/storeHooks";
+import { useAppDispatch, useAppSelector } from "hooks";
 import { TimerStatus } from "store/timer/types";
+import { NotificationTypes } from "store/settings/types";
 
 type CounterProps = {
   count: number;
@@ -45,7 +46,7 @@ const CounterProvider: React.FC = ({ children }) => {
       icon: notificationIcon,
       mute: !settings.notificationSoundOn,
     },
-    settings.notificationType !== "none"
+    settings.notificationType !== NotificationTypes.NONE
   );
 
   const [shouldFullscreen, setShouldFullscreen] = useState(false);

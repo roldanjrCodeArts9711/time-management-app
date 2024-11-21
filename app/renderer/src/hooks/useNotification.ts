@@ -1,42 +1,49 @@
 import bell from "assets/audios/notification-bell.wav";
 
-type OptionProps = {
+type HookOptions = {
   mute?: boolean;
 } & NotificationOptions;
 
 export const useNotification = (
-  constantOptions?: OptionProps,
-  notify?: boolean
+  commonOptions?: HookOptions,
+  showNotification?: boolean
 ) => {
-  return function (
+  return async function sendNotification(
     title: string,
     options: NotificationOptions,
     audioSrc?: string
   ) {
-    const defaultOptions: NotificationOptions = {
-      ...constantOptions,
+    const userOptions = {
+      ...commonOptions,
       ...options,
-      silent: true,
     };
 
-    // Making sure that notification sound the same
-    // in all Operating System
-
-    if (!constantOptions?.mute) {
-      new Audio(bell).play().catch((e) => {
-        console.warn("There was a problem playing sound", e);
-      });
+    // Making sure that notification sound the same in all Operating System
+    if (!userOptions.mute) {
+      await playSound(bell);
 
       if (audioSrc) {
-        setTimeout(() => {
-          new Audio(audioSrc).play().catch((e) => {
-            console.warn("There was a problem playing sound", e);
-          });
-        }, 1500);
+        // Small delay to avoid sound overlapping
+        await wait(1500);
+        await playSound(audioSrc);
       }
     }
 
-    if (!notify) return;
-    return new window.Notification(title, defaultOptions);
+    if (showNotification) {
+      new Notification(title, { ...userOptions, silent: true });
+    }
   };
 };
+
+async function playSound(audioSrc: string) {
+  try {
+    const audio = new Audio(audioSrc);
+    await audio.play();
+  } catch (e) {
+    console.warn("There was a problem playing sound", e);
+  }
+}
+
+async function wait(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
